@@ -43,3 +43,5 @@ jobs:
           git config user.email github-actions@github.com
           git revert --no-edit ${{ github.sha }}
           git push origin
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
