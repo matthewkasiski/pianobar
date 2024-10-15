@@ -22,8 +22,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install dependencies
         run: |
-#          sudo apt-get update
+          sudo apt-get update
           sudo apt install libao-dev libavcodec-dev libavfilter-dev libavformat-dev libavutil-dev libcurl4-gnutls-dev libgcrypt20-dev libjson-c-dev libpth-dev pkg-config build-essential
       - name: Build pianobar
         run: make
+      - name: Test install
+        run: make install
+      - name: Test uninstall
+        run: make uninstall
 
