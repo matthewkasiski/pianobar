@@ -26,3 +26,20 @@ jobs:
           sudo apt install libao-dev libavcodec-dev libavfilter-dev libavformat-dev libavutil-dev libcurl4-gnutls-dev libgcrypt20-dev libjson-c-dev libpth-dev pkg-config build-essential
       - name: Build pianobar
         run: make
+
+  revert-change:
+    runs-on: ubuntu-latest
+    needs: [ build ]
+    if: ${{ failure() }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # check out the current and prior state
+      - name: "Revert the commit that triggered this run, then push it to main"
+        shell: bash
+        run: |
+          echo "Reverting ${{ github.sha }}"
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git revert --no-edit ${{ github.sha }}
+          git push origin
