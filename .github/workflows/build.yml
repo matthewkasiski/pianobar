@@ -1,7 +1,4 @@
 name: build
-# Set permissions on GITHUB_TOKEN to allow updates to GitHub Actions workflows
-permissions:
-  actions: write
 
 on:
   push:
@@ -35,6 +32,11 @@ jobs:
     needs: [ build ]
     if: ${{ failure() }}
     steps:
+      - uses: actions/create-github-app-token@v1
+        id: generate-token
+        with:
+          app-id: ${{ secrets.APP_ID }}
+          private-key: ${{ secrets.APP_PRIVATE_KEY }}
       - uses: actions/checkout@v4
         with:
           fetch-depth: 2  # check out the current and prior state
@@ -47,4 +49,6 @@ jobs:
           git revert --no-edit ${{ github.sha }}
           git push
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ steps.generate-token.outputs.token  }}
+
+# https://github.com/orgs/community/discussions/35410#discussioncomment-10701448
