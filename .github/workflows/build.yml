@@ -15,8 +15,8 @@ jobs:
         os:
           - ubuntu-latest
           - ubuntu-24.04
-#          - ubuntu-22.04
-#          - ubuntu-20.04
+    #          - ubuntu-22.04
+    #          - ubuntu-20.04
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
@@ -32,14 +32,16 @@ jobs:
     needs: [ build ]
     if: ${{ failure() }}
     steps:
-      - name: Checkout branch
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.inputs.branch }}
-          fetch-depth: 0
-      - name: Revert pushed commit
+          fetch-depth: 2  # check out the current and prior state
+      - name: "Revert the commit that triggered this run"
+        shell: bash
         run: |
-          git config --global user.name 'github-actions[bot]'
-          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git revert --no-edit HEAD
+          echo "Reverting ${{ github.sha }}"
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git revert --no-edit ${{ github.sha }}
           git push
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
