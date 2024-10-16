@@ -43,14 +43,11 @@ jobs:
           token: ${{ steps.generate-token.outputs.token  }}
       - name: "Revert the commit that triggered this run"
         shell: bash
-        env:
-          GH_TOKEN: ${{ steps.generate-token.outputs.token }}
         run: |
           echo "Reverting ${{ github.sha }}"
           git config user.name github-actions
           git config user.email github-actions@github.com
           git revert --no-edit ${{ github.sha }}
-          echo "Git - pushing changes"
           git push
 
 # https://github.com/orgs/community/discussions/35410#discussioncomment-10701448
